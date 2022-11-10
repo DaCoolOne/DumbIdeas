@@ -24,5 +24,5 @@ with open("in.py", 'r') as inp:
         c = unicode_compress(orig.encode('utf8'))
         test_back = unicode_decompress(c)
         print(orig == test_back)
-        f.write(b"b='"+c+b"'.encode()\nexec(''.join([chr(((h<<6&64|c&63)+22)%133+10)for h,c in zip(b[1::2],b[2::2])]))")
+        f.write(b"b='"+c+b"'.encode()\nexec(''.join(chr(((h<<6&64|c&63)+22)%133+10)for h,c in zip(b[1::2],b[2::2])))")
 
