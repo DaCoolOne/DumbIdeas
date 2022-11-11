@@ -28,7 +28,7 @@ if __name__ == "__main__":
         with open(sys.argv[2] if len(sys.argv) >= 3 else "out.py", 'wb') as f:
 
             # Read input file.
-            orig = inp.read()
+            orig = inp.read().replace('\t', '    ')
 
             # Compress
             E = unicode_compress(orig.encode('utf8'))
