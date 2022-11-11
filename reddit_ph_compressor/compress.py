@@ -49,6 +49,10 @@ if __name__ == "__main__":
 
             # Read input file.
             orig = inp.read()
+            
+            if '\t' in orig:
+                warnings.warn("File cannot contain tabs. Converting each tab to 4 spaces.", stacklevel=2)
+                orig = orig.replace('\t', '    ')
 
             # Compress
             E = unicode_compress(orig.encode('utf8'))
