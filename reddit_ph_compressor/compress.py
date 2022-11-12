@@ -17,7 +17,7 @@ class UnknownCharacterException(ValueError):
 
 # Compress algorithm
 def unicode_compress(bytes):
-    o = b'E'
+    o = bytearray(b'E')
     line = 1
     for c in bytes:
         # Skip carriage returns (This should be done by Python in the file read, but just in case this gets called elsewhere)
