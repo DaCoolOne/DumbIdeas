@@ -1,11 +1,8 @@
-# gui.py
-
 import PySimpleGUI as sg
-import os.path
-import warnings
 import sys
+import warnings
 
-# Functions
+# 
 if sys.version_info[0] != 3 or sys.version_info[1] < 10:
     warnings.warn("The python interpreter may break on versions earlier than 3.10 (see https://github.com/DaCoolOne/DumbIdeas/issues/1)", stacklevel=2)
 
@@ -18,8 +15,6 @@ class UnknownCharacterException(ValueError):
             super().__init__(f"{line}: Cannot encode {descriptor} character.")
         else:
             super().__init__(f"{line}: Attempt to encode UTF8 character sequence. (This program only can encode ascii non-control characters and newlines)")
-
-# Compress algorithm
 def unicode_compress(bytes):
     o = bytearray(b'E')
     line = 1
@@ -46,12 +41,8 @@ def unicode_decompress(b):
 
 # Compressing
 def compress_file():
-    filename = os.path.join(
-                values["-FOLDER-"], values["-FILE LIST-"][0]
-    )
-    
-    with open(filename, 'r', encoding='utf8') as inp:
-        with open(filename.replace('.py', '') + "_compressed.py", 'wb') as out:
+    with open(values["-IN-"], 'r', encoding='utf8') as inp:
+        with open(values["-OUT-"] + (values["-IN-"])[(values["-IN-"]).rfind('/'):].replace('.py', '_compressed.py'), 'wb') as out:
             # Read input file.
             orig = inp.read()
             
@@ -73,73 +64,36 @@ def compress_file():
             else:
                 raise ValueError("An unknown error occured. Compression/decompression cycle failed. Output file unmodified.")
 
-
-# First the window layout in 2 columns
-
-file_list_column = [
-    [
-        sg.Text("Project Folder"),
-        sg.In(size=(25, 1), enable_events=True, key="-FOLDER-"),
-        sg.FolderBrowse(),
-    ],
-    [
-        sg.Text("Choose the file to compress:")
-    ],
-    [
-        sg.Listbox(
-            values=[], enable_events=True, size=(40, 20), key="-FILE LIST-"
-        )
-    ]
+# GUI
+sg.theme('DarkBlue')
+GUI = [
+[sg.T("")], 
+[sg.Text("input file:		"), 
+sg.Input(), 
+sg.FileBrowse(key="-IN-", file_types=(("Python scripts", ".py"),))],
+[sg.T("")], 
+[sg.Text("output folder:	"), 
+sg.Input(), 
+sg.FolderBrowse(key="-OUT-")],
+[sg.Button("Submit")],
 ]
 
-image_viewer_column = [
-    [sg.Text(size=(40, 1), key="-TOUT-")],
-    [sg.Text(size=(40, 1), key="-LOC-")]
-]
-
-# ----- Full layout -----
-layout = [
-    [
-        sg.Column(file_list_column),
-        sg.VSeperator(),
-        sg.Column(image_viewer_column),
-    ]
-]
-
-window = sg.Window("Python compresser", layout)
-
-# Run the Event Loop
+window = sg.Window('Python compressor', GUI)
+    
 while True:
     event, values = window.read()
-    if event == "Exit" or event == sg.WIN_CLOSED:
+    if event == sg.WIN_CLOSED or event=="Exit":
         break
-    # Folder name was filled in, make a list of files in the folder
-    if event == "-FOLDER-":
-        folder = values["-FOLDER-"]
-        try:
-            # Get list of files in folder
-            file_list = os.listdir(folder)
-        except:
-            file_list = []
-
-        fnames = [
-            f
-            for f in file_list
-            if os.path.isfile(os.path.join(folder, f))
-            and f.lower().endswith((".py"))
-        ]
-        window["-FILE LIST-"].update(fnames)
-    elif event == "-FILE LIST-":
-        try:
-            filename = os.path.join(
-                values["-FOLDER-"], values["-FILE LIST-"][0]
-            )
-            window["-TOUT-"].update("File in progress...")
+    elif event == "Submit":
+        #print(values["-IN-"])
+        #print(values["-OUT-"])
+        #print(values["-OUT-"] + (values["-IN-"])[(values["-IN-"]).rfind('/'):].replace('.py', '_compressed.py'))
+        if values["-IN-"] == '' or values["-OUT-"] == '':
+            sg.popup('ERROR: These fields may not be empty.')
+        else:
+            sg.popup_notify('Compressing the script...')
             if compress_file():
-                window["-TOUT-"].update("Saved compressed program at:") 
-                window["-LOC-"].update(filename.replace('.py', '') + "_compressed.py")
+                sg.popup_notify('The script is successfully compressed at: ' + values["-IN-"])
+        
+        
 
-        except:
-            pass
-
-window.close()
