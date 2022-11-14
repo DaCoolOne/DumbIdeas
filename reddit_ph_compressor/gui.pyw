@@ -2,7 +2,6 @@ import PySimpleGUI as sg
 import sys
 import warnings
 
-# 
 if sys.version_info[0] != 3 or sys.version_info[1] < 10:
     warnings.warn("The python interpreter may break on versions earlier than 3.10 (see https://github.com/DaCoolOne/DumbIdeas/issues/1)", stacklevel=2)
 
@@ -41,8 +40,8 @@ def unicode_decompress(b):
 
 # Compressing
 def compress_file():
-    with open(sys.argv[1] if len(sys.argv) >= 2 else values["-IN-"], 'r', encoding='utf8') as inp:
-        with open(sys.argv[2] if len(sys.argv) >= 3 else values["-OUT-"] + (values["-IN-"])[(values["-IN-"]).rfind('/'):].replace('.py', '_compressed.py'), 'wb') as out:
+    with open(inputFile, 'r', encoding='utf8') as inp:
+        with open(outputFile, 'wb') as out:
             # Read input file.
             orig = inp.read()
             
@@ -63,6 +62,16 @@ def compress_file():
                 return True
             else:
                 raise ValueError("An unknown error occured. Compression/decompression cycle failed. Output file unmodified.")
+
+# Args
+if __name__ == "__main__" and len(sys.argv) >= 3:
+	inputFile = sys.argv[1]
+	outputFile = sys.argv[2]
+	
+	if compress_file():
+		sg.popup_notify('The script is successfully compressed at: ' + outputFile)
+	exit()
+	
 
 # GUI
 sg.theme('DarkBlue')
@@ -88,6 +97,8 @@ while True:
         if values["-IN-"] == '' or values["-OUT-"] == '':
             sg.popup('ERROR: These fields may not be empty.')
         else:
+            inputFile = values["-IN-"]
+            outputFile = values["-OUT-"] + (values["-IN-"])[(values["-IN-"]).rfind('/'):].replace('.py', '_compressed.py')
             sg.popup_notify('Compressing the script...')
             if compress_file():
                 sg.popup_notify('The script is successfully compressed at: ' + values["-IN-"])
