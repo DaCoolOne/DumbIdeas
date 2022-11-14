@@ -41,8 +41,8 @@ def unicode_decompress(b):
 
 # Compressing
 def compress_file():
-    with open(values["-IN-"], 'r', encoding='utf8') as inp:
-        with open(values["-OUT-"] + (values["-IN-"])[(values["-IN-"]).rfind('/'):].replace('.py', '_compressed.py'), 'wb') as out:
+    with open(sys.argv[1] if len(sys.argv) >= 2 else values["-IN-"], 'r', encoding='utf8') as inp:
+        with open(sys.argv[2] if len(sys.argv) >= 3 else values["-OUT-"] + (values["-IN-"])[(values["-IN-"]).rfind('/'):].replace('.py', '_compressed.py'), 'wb') as out:
             # Read input file.
             orig = inp.read()
             
@@ -85,15 +85,9 @@ while True:
     if event == sg.WIN_CLOSED or event=="Exit":
         break
     elif event == "Submit":
-        #print(values["-IN-"])
-        #print(values["-OUT-"])
-        #print(values["-OUT-"] + (values["-IN-"])[(values["-IN-"]).rfind('/'):].replace('.py', '_compressed.py'))
         if values["-IN-"] == '' or values["-OUT-"] == '':
             sg.popup('ERROR: These fields may not be empty.')
         else:
             sg.popup_notify('Compressing the script...')
             if compress_file():
                 sg.popup_notify('The script is successfully compressed at: ' + values["-IN-"])
-        
-        
-
