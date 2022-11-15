@@ -1,5 +1,3 @@
-
-
 import sys
 import warnings
 if sys.version_info[0] != 3 or sys.version_info[1] < 10:
@@ -60,6 +58,7 @@ def compress_file(in_file, out_file):
             # Write output to file, along with code-golfed decompressor.
             with open(out_file, 'wb') as out:
                 out.write(b"b='"+E+b"'.encode();exec(''.join(chr(((h<<6&64|c&63)+22)%133+10)for h,c in zip(b[1::2],b[2::2])))")
+                return True
         else:
             raise ValueError("An unknown error occured. Compression/decompression cycle failed. Output file unmodified.")
 

@@ -37,3 +37,5 @@ if __name__ == "__main__":
                 sg.popup_notify('Compressing the script...')
                 if compress_file(inputFile, outputFile):
                     sg.popup_notify('The script is successfully compressed at: ' + values["-IN-"])
+                else:
+                    sg.popup('ERROR: An unknown error reported.')
