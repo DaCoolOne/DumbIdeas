@@ -1,8 +1,10 @@
-
-
 import PySimpleGUI as sg
-
+import sys
 from compress import compress_file
+
+if len(sys.argv) >= 3:
+    compress_file(sys.argv[1], sys.argv[2])
+    exit()
 
 if __name__ == "__main__":
     # GUI
