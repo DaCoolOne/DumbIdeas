@@ -1,5 +1,3 @@
-
-
 import sys
 import warnings
 if sys.version_info[0] != 3 or sys.version_info[1] < 10:
@@ -40,30 +38,31 @@ def unicode_compress(bytes):
 def unicode_decompress(b):
     return ''.join([chr(((h<<6&64|c&63)+22)%133+10)for h,c in zip(b[1::2],b[2::2])])
 
+def compress_file(in_file, out_file):
+    with open(in_file, 'r', encoding='utf8') as inp:
+        # Read input file.
+        orig = inp.read()
+        
+        if '\t' in orig:
+            warnings.warn("File cannot contain tabs. Converting each tab to 4 spaces.", stacklevel=2)
+            orig = orig.replace('\t', '    ')
+
+        # Compress
+        E = unicode_compress(orig.encode('utf8'))
+
+        # Check that everything worked according to keikaku
+        test_back = unicode_decompress(E)
+        if all(a == b for a,b in zip(orig.splitlines(),test_back.splitlines())):
+            print("Success!")
+
+            # Write output to file, along with code-golfed decompressor.
+            with open(out_file, 'wb') as out:
+                out.write(b"b='"+E+b"'.encode();exec(''.join(chr(((h<<6&64|c&63)+22)%133+10)for h,c in zip(b[1::2],b[2::2])))")
+                return True
+        else:
+            raise ValueError("An unknown error occured. Compression/decompression cycle failed. Output file unmodified.")
+
 # If run as main, use argv[1] for input, argv[2] for output
 if __name__ == "__main__":
-    import sys
-
-    with open(sys.argv[1] if len(sys.argv) >= 2 else "in.py", 'r', encoding='utf8') as inp:
-        with open(sys.argv[2] if len(sys.argv) >= 3 else "out.py", 'wb') as out:
-
-            # Read input file.
-            orig = inp.read()
-            
-            if '\t' in orig:
-                warnings.warn("File cannot contain tabs. Converting each tab to 4 spaces.", stacklevel=2)
-                orig = orig.replace('\t', '    ')
-
-            # Compress
-            E = unicode_compress(orig.encode('utf8'))
-
-            # Check that everything worked according to keikaku
-            test_back = unicode_decompress(E)
-            if all(a == b for a,b in zip(orig.splitlines(),test_back.splitlines())):
-                print("Success!")
-
-                # Write output to file, along with code-golfed decompressor.
-                out.write(b"b='"+E+b"'.encode();exec(''.join(chr(((h<<6&64|c&63)+22)%133+10)for h,c in zip(b[1::2],b[2::2])))")
-            else:
-                raise ValueError("An unknown error occured. Compression/decompression cycle failed. Output file unmodified.")
+    compress_file(sys.argv[1] if len(sys.argv) >= 2 else "in.py", sys.argv[2] if len(sys.argv) >= 3 else "out.py")
 
