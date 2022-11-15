@@ -4,7 +4,8 @@ from compress import compress_file
 
 if len(sys.argv) >= 3:
     compress_file(sys.argv[1], sys.argv[2])
-    exit()
+    print("File compressed. Stopping...")
+    sys.exit()
 
 if __name__ == "__main__":
     # GUI
