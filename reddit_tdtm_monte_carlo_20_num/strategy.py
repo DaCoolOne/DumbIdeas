@@ -6,13 +6,14 @@ class Strategy:
     # Returns true if successfully placed
     def place(self, new_num: int) -> bool:
         # Determine which "range" this number fits in.
-        low = 0
+        low = -1
+        high = 20
         for i, num in enumerate(self.nums):
-            high = i
             if num is not None:
                 if num < new_num:
                     low = i
                 elif num > new_num:
+                    high = i
                     break
                 else:
                     # Numbers are equal
@@ -22,9 +23,9 @@ class Strategy:
         if low >= high - 1:
             return False
         
-        lowval = self.nums[low] or 0
-        highval = self.nums[high] or 1000
-        optimal = round((high - low - 1) * ((new_num - lowval) / (highval - lowval)) + low)
+        lowval = self.nums[low] if low >= 0 else 0
+        highval = self.nums[high] if high < 20 else 1000
+        optimal = round((high - low - 2) * ((new_num - lowval) / (highval - lowval))) + low + 1
 
         self.nums[optimal] = new_num
 
